@@ -700,8 +700,22 @@ async function createClient() {
     closeModal('modal-client');
     ['nc-name','nc-slug','nc-domain','nc-depts'].forEach(id => document.getElementById(id).value = '');
     loadClients();
+  } else if (res && res.error && res.error.code === '23505') {
+    toast('Ya existe un cliente con ese slug', 'error');
+  } else if (!res) {
+    // Error de red — verificar si igualmente se creó
+    const check = await apiFetch('/api/clients');
+    const created = check && check.find(c => c.slug === slug);
+    if (created) {
+      toast('Cliente creado correctamente');
+      closeModal('modal-client');
+      ['nc-name','nc-slug','nc-domain','nc-depts'].forEach(id => document.getElementById(id).value = '');
+      loadClients();
+    } else {
+      toast('Error al crear el cliente. Inténtalo de nuevo.', 'error');
+    }
   } else {
-    toast('Error al crear el cliente', 'error');
+    toast('Error: ' + (res.error?.message || 'inténtalo de nuevo'), 'error');
   }
 }
 
