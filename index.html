@@ -223,7 +223,7 @@ textarea.form-input { resize: vertical; min-height: 80px; }
       En vivo
     </div>
     <div class="nav-label">Herramientas</div>
-    <div class="nav-item" onclick="navigate('snippet', this)">
+    <div class="nav-item" onclick="navigate('codigofirma', this)">
       <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
       Snippet
     </div>
@@ -366,9 +366,9 @@ textarea.form-input { resize: vertical; min-height: 80px; }
     </div>
 
     <!-- SNIPPET -->
-    <div class="section" id="sec-snippet">
+    <div class="section" id="sec-codigofirma">
       <div class="card">
-        <div class="card-header"><div class="card-title">Generador de snippet HTML</div></div>
+        <div class="card-header"><div class="card-title">Generador de código de firma</div></div>
         <div class="form-grid form-grid-2" style="margin-bottom:18px">
           <div class="form-group">
             <label class="form-label">Cliente</label>
@@ -408,13 +408,13 @@ textarea.form-input { resize: vertical; min-height: 80px; }
           </div>
         </div>
         <div class="card-header" style="margin-bottom:8px">
-          <div class="card-title">Snippet generado</div>
-          <button class="btn btn-sm btn-primary" onclick="copySnippet()">Copiar HTML</button>
+          <div class="card-title">Código generado</div>
+          <button class="btn btn-sm btn-primary" onclick="copyCode()">Copiar HTML</button>
         </div>
-        <div class="snippet" id="snippet-output">Selecciona un cliente para generar el snippet...</div>
+        <div class="snippet" id="code-output">Selecciona un cliente para generar el snippet...</div>
         <div style="margin-top:14px;padding:12px 14px;background:var(--bg3);border-radius:var(--radius);font-size:12px;color:var(--text2);line-height:1.7">
           <strong style="color:var(--text)">Instrucciones Outlook:</strong><br>
-          1. Copia el snippet · 2. Archivo → Opciones → Correo → Firmas<br>
+          1. Copia el código · 2. Archivo → Opciones → Correo → Firmas<br>
           3. Editar firma → botón "HTML" del editor · 4. Pegar al final del HTML existente
         </div>
       </div>
@@ -559,7 +559,7 @@ const pages = {
   campaigns:  ['Campañas', 'Banners y programación de campañas', '<button class="btn btn-primary" onclick="openCampaignModal()">+ Nueva campaña</button>'],
   analytics:  ['Analítica', 'Métricas de rendimiento', ''],
   live:       ['En vivo', 'Eventos en tiempo real', ''],
-  snippet:    ['Snippet HTML', 'Generador de código de firma', ''],
+  snippet:    ['Código de firma', 'Generador de código de firma', ''],
 };
 
 function navigate(id, el) {
@@ -933,7 +933,7 @@ function updateSnippet() {
     });
   }
 
-  if (!clientSlug) { document.getElementById('snippet-output').textContent = 'Selecciona un cliente para generar el snippet...'; return; }
+  if (!clientSlug) { document.getElementById('code-output').textContent = 'Selecciona un cliente para generar el código...'; return; }
 
   const deptOpt  = deptSel.options[deptSel.selectedIndex];
   const deptSlug = deptOpt?.dataset?.slug || '';
@@ -949,7 +949,7 @@ function updateSnippet() {
   const bannerUrl = base + '/.netlify/functions/b?' + bParams;
   const clickUrl  = base + '/.netlify/functions/click?' + bParams;
 
-  document.getElementById('snippet-output').textContent =
+  document.getElementById('code-output').textContent =
 `<table cellpadding="0" cellspacing="0" border="0">
   <tr>
     <td style="font-family:Arial,sans-serif;font-size:14px;
@@ -985,9 +985,9 @@ function updateSnippet() {
 </table>`;
 }
 
-function copySnippet() {
-  const text = document.getElementById('snippet-output').textContent;
-  navigator.clipboard.writeText(text).then(() => toast('Snippet copiado al portapapeles')).catch(() => toast('Error al copiar', 'error'));
+function copyCode() {
+  const text = document.getElementById('code-output').textContent;
+  navigator.clipboard.writeText(text).then(() => toast('Código copiado al portapapeles')).catch(() => toast('Error al copiar', 'error'));
 }
 
 // ── Init ──
