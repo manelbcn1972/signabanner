@@ -1,0 +1,32 @@
+[build]
+  publish = "."
+  functions = "netlify/functions"
+
+[build.environment]
+  NODE_VERSION = "18"
+
+# Redirigir /api/* a la función api
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/api/:splat"
+  status = 200
+
+# Banner: /b/:client/:dept → función b
+[[redirects]]
+  from = "/b/*"
+  to = "/.netlify/functions/b"
+  status = 200
+  force = true
+
+# Click tracking: /click/* → función click
+[[redirects]]
+  from = "/click/*"
+  to = "/.netlify/functions/click"
+  status = 200
+  force = true
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "SAMEORIGIN"
+    X-Content-Type-Options = "nosniff"
