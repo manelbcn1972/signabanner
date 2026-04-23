@@ -599,9 +599,9 @@ async function apiFetch(path, opts = {}) {
 // ── Dashboard ──
 async function loadDashboard() {
   const [summary, camps, events] = await Promise.all([
-    apiFetch('/api/analytics/summary?days=30'),
-    apiFetch('/api/campaigns'),
-    apiFetch('/api/analytics/events?limit=5')
+    apiFetch('/analytics/summary?days=30'),
+    apiFetch('/campaigns'),
+    apiFetch('/analytics/events?limit=5')
   ]);
 
   if (summary) {
@@ -613,7 +613,7 @@ async function loadDashboard() {
     document.getElementById('d-ctr').textContent     = ctr.toFixed(1) + '%';
   }
 
-  clients = await apiFetch('/api/clients') || [];
+  clients = await apiFetch('/clients') || [];
   document.getElementById('nb-clients').textContent = clients.length;
 
   const activeCamps = (camps || []).filter(c => campaignStatus(c).label === 'Activa');
@@ -656,7 +656,7 @@ async function loadDashboard() {
 
 // ── Clientes ──
 async function loadClients() {
-  clients = await apiFetch('/api/clients') || [];
+  clients = await apiFetch('/clients') || [];
   document.getElementById('nb-clients').textContent = clients.length;
   const tbody = document.getElementById('clients-table-body');
   if (clients.length === 0) {
@@ -691,7 +691,7 @@ async function createClient() {
   const domain = document.getElementById('nc-domain').value.trim();
   const depts = document.getElementById('nc-depts').value.split(',').map(d=>d.trim()).filter(Boolean);
   if (!name || !slug) { toast('Nombre y slug son obligatorios', 'error'); return; }
-  const res = await apiFetch('/api/clients', {
+  const res = await apiFetch('/clients', {
     method: 'POST',
     body: JSON.stringify({ name, slug, domain: domain || null, departments: depts })
   });
@@ -704,7 +704,7 @@ async function createClient() {
     toast('Ya existe un cliente con ese slug', 'error');
   } else if (!res) {
     // Error de red — verificar si igualmente se creó
-    const check = await apiFetch('/api/clients');
+    const check = await apiFetch('/clients');
     const created = check && check.find(c => c.slug === slug);
     if (created) {
       toast('Cliente creado correctamente');
@@ -733,7 +733,7 @@ function autoSlug() {
 
 // ── Campañas ──
 async function loadCampaigns() {
-  campaigns = await apiFetch('/api/campaigns') || [];
+  campaigns = await apiFetch('/campaigns') || [];
   document.getElementById('nb-campaigns').textContent = campaigns.length;
   const tbody = document.getElementById('campaigns-table-body');
   if (campaigns.length === 0) {
@@ -760,7 +760,7 @@ async function loadCampaigns() {
 }
 
 async function openCampaignModal() {
-  if (clients.length === 0) clients = await apiFetch('/api/clients') || [];
+  if (clients.length === 0) clients = await apiFetch('/clients') || [];
   const sel = document.getElementById('ncamp-client');
   sel.innerHTML = '<option value="">Selecciona cliente...</option>' +
     clients.map(c=>`<option value="${c.id}" data-slug="${c.slug}">${c.name}</option>`).join('');
@@ -799,7 +799,7 @@ async function createCampaign() {
   if (dept_id) payload.department_id = dept_id;
   if (ends_at) payload.ends_at = new Date(ends_at).toISOString();
 
-  const res = await apiFetch('/api/campaigns', { method: 'POST', body: JSON.stringify(payload) });
+  const res = await apiFetch('/campaigns', { method: 'POST', body: JSON.stringify(payload) });
   if (res && res.id) {
     toast('Campaña creada correctamente');
     closeModal('modal-campaign');
@@ -810,7 +810,7 @@ async function createCampaign() {
 }
 
 async function toggleCampaign(id, currentActive) {
-  await apiFetch(`/api/campaigns/${id}`, { method: 'PATCH', body: JSON.stringify({ active: !currentActive }) });
+  await apiFetch(`/campaigns/${id}`, { method: 'PATCH', body: JSON.stringify({ active: !currentActive }) });
   toast(currentActive ? 'Campaña pausada' : 'Campaña activada');
   loadCampaigns();
 }
@@ -818,9 +818,9 @@ async function toggleCampaign(id, currentActive) {
 // ── Analítica ──
 async function loadAnalytics() {
   const [summary, campStats, empStats] = await Promise.all([
-    apiFetch('/api/analytics/summary?days=30'),
-    apiFetch('/api/analytics/campaigns'),
-    apiFetch('/api/analytics/employees')
+    apiFetch('/analytics/summary?days=30'),
+    apiFetch('/analytics/campaigns'),
+    apiFetch('/analytics/employees')
   ]);
 
   if (summary) {
@@ -879,7 +879,7 @@ async function startLive() {
   const el = document.getElementById('live-events-list');
 
   async function fetchEvents() {
-    const data = await apiFetch('/api/analytics/events?limit=20');
+    const data = await apiFetch('/analytics/events?limit=20');
     if (data && data.length > 0) {
       el.innerHTML = data.map(e => `
         <div class="event-row">
@@ -902,7 +902,7 @@ async function startLive() {
 
 // ── Snippet ──
 async function populateSnippetSelects() {
-  if (clients.length === 0) clients = await apiFetch('/api/clients') || [];
+  if (clients.length === 0) clients = await apiFetch('/clients') || [];
   const sel = document.getElementById('snip-client');
   sel.innerHTML = '<option value="">Selecciona cliente...</option>' +
     clients.map(c => `<option value="${c.id}" data-slug="${c.slug}">${c.name}</option>`).join('');
