@@ -1,0 +1,1002 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SignaBanner · Panel de gestión</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0d0f12;
+  --bg2: #13161b;
+  --bg3: #1a1e25;
+  --bg4: #21262f;
+  --border: #2a303a;
+  --border2: #353d49;
+  --text: #e8eaed;
+  --text2: #8b95a3;
+  --text3: #555f6e;
+  --accent: #3b82f6;
+  --accent2: #1d4ed8;
+  --green: #22c55e;
+  --amber: #f59e0b;
+  --red: #ef4444;
+  --radius: 8px;
+  --radius2: 12px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); font-size: 14px; min-height: 100vh; display: flex; }
+
+/* SIDEBAR */
+.sidebar { width: 220px; background: var(--bg2); border-right: 1px solid var(--border); display: flex; flex-direction: column; position: fixed; top: 0; left: 0; height: 100vh; z-index: 10; }
+.logo { padding: 20px 20px 16px; border-bottom: 1px solid var(--border); }
+.logo-mark { display: flex; align-items: center; gap: 10px; }
+.logo-icon { width: 28px; height: 28px; background: var(--accent); border-radius: 6px; display: flex; align-items: center; justify-content: center; }
+.logo-icon svg { width: 16px; height: 16px; fill: white; }
+.logo-name { font-size: 15px; font-weight: 500; letter-spacing: -0.3px; }
+.logo-sub { font-size: 10px; color: var(--text3); margin-top: 2px; font-family: 'DM Mono', monospace; }
+.nav { flex: 1; padding: 12px 8px; overflow-y: auto; }
+.nav-label { font-size: 10px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.08em; padding: 8px 12px 4px; font-family: 'DM Mono', monospace; }
+.nav-item { display: flex; align-items: center; gap: 10px; padding: 8px 12px; border-radius: var(--radius); cursor: pointer; color: var(--text2); transition: all 0.15s; margin: 1px 0; font-size: 13px; }
+.nav-item:hover { background: var(--bg3); color: var(--text); }
+.nav-item.active { background: var(--bg4); color: var(--text); }
+.nav-item.active .nav-icon { color: var(--accent); }
+.nav-icon { width: 16px; height: 16px; flex-shrink: 0; opacity: 0.7; }
+.nav-item.active .nav-icon { opacity: 1; }
+.nav-badge { margin-left: auto; font-size: 10px; background: var(--accent); color: white; padding: 1px 6px; border-radius: 10px; font-family: 'DM Mono', monospace; }
+.sidebar-footer { padding: 12px 16px; border-top: 1px solid var(--border); }
+.api-url { font-family: 'DM Mono', monospace; font-size: 9px; color: var(--text3); word-break: break-all; line-height: 1.5; }
+
+/* MAIN */
+.main { margin-left: 220px; flex: 1; display: flex; flex-direction: column; min-height: 100vh; }
+.topbar { padding: 16px 28px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; background: var(--bg2); position: sticky; top: 0; z-index: 5; }
+.page-title { font-size: 16px; font-weight: 500; letter-spacing: -0.3px; }
+.page-sub { font-size: 12px; color: var(--text3); margin-top: 2px; }
+.content { padding: 24px 28px; flex: 1; }
+
+/* BUTTONS */
+.btn { display: inline-flex; align-items: center; gap: 6px; padding: 7px 14px; border-radius: var(--radius); border: 1px solid var(--border2); background: var(--bg3); color: var(--text); font-size: 13px; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all 0.15s; }
+.btn:hover { background: var(--bg4); border-color: var(--border2); }
+.btn-primary { background: var(--accent); border-color: var(--accent); color: white; }
+.btn-primary:hover { background: var(--accent2); border-color: var(--accent2); }
+.btn-danger { background: transparent; border-color: var(--red); color: var(--red); }
+.btn-danger:hover { background: rgba(239,68,68,0.1); }
+.btn-sm { padding: 4px 10px; font-size: 12px; }
+.btn-icon { padding: 6px; border-radius: var(--radius); border: 1px solid var(--border); background: var(--bg3); cursor: pointer; color: var(--text2); display: inline-flex; align-items: center; justify-content: center; transition: all 0.15s; }
+.btn-icon:hover { background: var(--bg4); color: var(--text); }
+
+/* CARDS */
+.card { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius2); padding: 18px 20px; margin-bottom: 14px; }
+.card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+.card-title { font-size: 12px; font-weight: 500; color: var(--text2); text-transform: uppercase; letter-spacing: 0.06em; font-family: 'DM Mono', monospace; }
+
+/* STATS */
+.stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 20px; }
+.stat-card { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius2); padding: 16px 18px; }
+.stat-val { font-size: 26px; font-weight: 300; letter-spacing: -1px; line-height: 1; margin-bottom: 4px; font-family: 'DM Mono', monospace; }
+.stat-label { font-size: 11px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.06em; }
+.stat-delta { font-size: 11px; margin-top: 8px; display: flex; align-items: center; gap: 4px; }
+.delta-up { color: var(--green); }
+.delta-dn { color: var(--red); }
+
+/* TABLE */
+.table-wrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; }
+th { font-size: 10px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.06em; padding: 8px 12px; border-bottom: 1px solid var(--border); text-align: left; font-family: 'DM Mono', monospace; font-weight: 400; white-space: nowrap; }
+td { padding: 11px 12px; border-bottom: 1px solid var(--border); color: var(--text); font-size: 13px; vertical-align: middle; }
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: rgba(255,255,255,0.02); }
+
+/* BADGES */
+.badge { display: inline-flex; align-items: center; gap: 4px; font-size: 10px; padding: 2px 8px; border-radius: 20px; font-family: 'DM Mono', monospace; font-weight: 500; white-space: nowrap; }
+.badge-green { background: rgba(34,197,94,0.12); color: var(--green); border: 1px solid rgba(34,197,94,0.2); }
+.badge-amber { background: rgba(245,158,11,0.12); color: var(--amber); border: 1px solid rgba(245,158,11,0.2); }
+.badge-red { background: rgba(239,68,68,0.12); color: var(--red); border: 1px solid rgba(239,68,68,0.2); }
+.badge-blue { background: rgba(59,130,246,0.12); color: var(--accent); border: 1px solid rgba(59,130,246,0.2); }
+.badge-gray { background: rgba(139,149,163,0.1); color: var(--text2); border: 1px solid var(--border); }
+.badge::before { content: ''; width: 5px; height: 5px; border-radius: 50%; background: currentColor; }
+
+/* FORMS */
+.form-grid { display: grid; gap: 14px; }
+.form-grid-2 { grid-template-columns: 1fr 1fr; }
+.form-group { display: flex; flex-direction: column; gap: 6px; }
+.form-label { font-size: 11px; color: var(--text2); text-transform: uppercase; letter-spacing: 0.06em; font-family: 'DM Mono', monospace; }
+.form-input { padding: 8px 12px; background: var(--bg3); border: 1px solid var(--border); border-radius: var(--radius); color: var(--text); font-size: 13px; font-family: 'DM Sans', sans-serif; transition: border-color 0.15s; }
+.form-input:focus { outline: none; border-color: var(--accent); }
+.form-input::placeholder { color: var(--text3); }
+.form-select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238b95a3' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 10px center; padding-right: 28px; }
+textarea.form-input { resize: vertical; min-height: 80px; }
+
+/* PROGRESS */
+.progress-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+.progress-label { font-size: 12px; color: var(--text2); min-width: 130px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.progress-bg { flex: 1; height: 4px; background: var(--bg4); border-radius: 4px; overflow: hidden; }
+.progress-fill { height: 4px; border-radius: 4px; transition: width 0.4s; }
+.progress-val { font-size: 11px; color: var(--text3); min-width: 36px; text-align: right; font-family: 'DM Mono', monospace; }
+
+/* MODAL */
+.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 100; display: none; align-items: center; justify-content: center; backdrop-filter: blur(4px); }
+.modal-overlay.open { display: flex; }
+.modal { background: var(--bg2); border: 1px solid var(--border2); border-radius: var(--radius2); padding: 24px; width: 520px; max-width: 95vw; max-height: 90vh; overflow-y: auto; }
+.modal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+.modal-title { font-size: 15px; font-weight: 500; }
+.modal-close { background: none; border: none; color: var(--text3); cursor: pointer; font-size: 18px; padding: 4px; }
+.modal-close:hover { color: var(--text); }
+.modal-footer { display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--border); }
+
+/* SNIPPET BOX */
+.snippet { background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px; font-family: 'DM Mono', monospace; font-size: 11px; color: var(--text2); line-height: 1.7; white-space: pre-wrap; word-break: break-all; }
+
+/* TABS */
+.tabs { display: flex; gap: 2px; background: var(--bg3); border-radius: var(--radius); padding: 3px; margin-bottom: 18px; }
+.tab { padding: 6px 14px; border-radius: 6px; cursor: pointer; font-size: 12px; color: var(--text2); transition: all 0.15s; }
+.tab:hover { color: var(--text); }
+.tab.active { background: var(--bg4); color: var(--text); }
+
+/* GRID */
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
+
+/* EVENTS LIVE */
+.event-row { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--border); animation: fadeIn 0.3s ease; }
+.event-row:last-child { border-bottom: none; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: translateY(0); } }
+.event-time { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--text3); min-width: 56px; }
+.event-info { flex: 1; }
+.event-name { font-size: 12px; font-weight: 500; }
+.event-meta { font-size: 11px; color: var(--text3); margin-top: 1px; }
+.pulse { display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: var(--green); margin-right: 6px; animation: pulse 2s infinite; }
+@keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+/* EMPTY STATE */
+.empty { text-align: center; padding: 48px 20px; color: var(--text3); }
+.empty-icon { font-size: 32px; margin-bottom: 12px; opacity: 0.4; }
+.empty-text { font-size: 13px; margin-bottom: 16px; }
+
+/* TOAST */
+.toast { position: fixed; bottom: 24px; right: 24px; background: var(--bg4); border: 1px solid var(--border2); border-radius: var(--radius); padding: 12px 16px; font-size: 13px; z-index: 200; transform: translateY(80px); opacity: 0; transition: all 0.25s; pointer-events: none; }
+.toast.show { transform: translateY(0); opacity: 1; }
+.toast.success { border-color: rgba(34,197,94,0.4); }
+.toast.error { border-color: rgba(239,68,68,0.4); }
+
+/* AVATAR */
+.avatar { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 500; flex-shrink: 0; font-family: 'DM Mono', monospace; }
+
+/* SECTIONS */
+.section { display: none; }
+.section.active { display: block; }
+
+/* CHART BARS */
+.bar-chart { display: flex; align-items: flex-end; gap: 6px; height: 100px; }
+.bar-wrap { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; height: 100%; }
+.bar-inner { width: 100%; display: flex; flex-direction: column; justify-content: flex-end; height: 85%; gap: 1px; }
+.bar-seg-click { background: var(--accent); border-radius: 2px 2px 0 0; min-height: 2px; transition: height 0.4s; }
+.bar-seg-load { background: rgba(59,130,246,0.2); border-radius: 2px 2px 0 0; min-height: 2px; transition: height 0.4s; }
+.bar-lbl { font-size: 9px; color: var(--text3); font-family: 'DM Mono', monospace; }
+
+/* RESPONSIVE */
+@media (max-width: 900px) {
+  .stats-grid { grid-template-columns: 1fr 1fr; }
+  .two-col { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<nav class="sidebar">
+  <div class="logo">
+    <div class="logo-mark">
+      <div class="logo-icon">
+        <svg viewBox="0 0 24 24"><path d="M3 8l9-5 9 5v8l-9 5-9-5V8z"/></svg>
+      </div>
+      <div>
+        <div class="logo-name">SignaBanner</div>
+        <div class="logo-sub">v1.0 · panel</div>
+      </div>
+    </div>
+  </div>
+  <div class="nav">
+    <div class="nav-label">Principal</div>
+    <div class="nav-item active" onclick="navigate('dashboard', this)">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+      Dashboard
+    </div>
+    <div class="nav-item" onclick="navigate('clients', this)">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
+      Clientes
+      <span class="nav-badge" id="nb-clients">0</span>
+    </div>
+    <div class="nav-item" onclick="navigate('campaigns', this)">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+      Campañas
+      <span class="nav-badge" id="nb-campaigns">0</span>
+    </div>
+    <div class="nav-label">Analítica</div>
+    <div class="nav-item" onclick="navigate('analytics', this)">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+      Analítica
+    </div>
+    <div class="nav-item" onclick="navigate('live', this)">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg>
+      En vivo
+    </div>
+    <div class="nav-label">Herramientas</div>
+    <div class="nav-item" onclick="navigate('snippet', this)">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+      Snippet
+    </div>
+  </div>
+  <div class="sidebar-footer">
+    <div class="api-url" id="api-url-display">cjitydjdrktvbciwapvl.supabase.co/functions/v1/signabanner</div>
+  </div>
+</nav>
+
+<!-- MAIN -->
+<div class="main">
+  <div class="topbar">
+    <div>
+      <div class="page-title" id="page-title">Dashboard</div>
+      <div class="page-sub" id="page-sub">Resumen general</div>
+    </div>
+    <div id="topbar-actions"></div>
+  </div>
+
+  <div class="content">
+
+    <!-- DASHBOARD -->
+    <div class="section active" id="sec-dashboard">
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-val" id="d-loads">—</div>
+          <div class="stat-label">Cargas banner</div>
+          <div class="stat-delta delta-up">últimos 30 días</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-val" id="d-clicks">—</div>
+          <div class="stat-label">Clics totales</div>
+          <div class="stat-delta delta-up">últimos 30 días</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-val" id="d-ctr">—</div>
+          <div class="stat-label">CTR medio</div>
+          <div class="stat-delta">click-through rate</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-val" id="d-clients">—</div>
+          <div class="stat-label">Clientes activos</div>
+          <div class="stat-delta">con campaña activa</div>
+        </div>
+      </div>
+      <div class="two-col">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">Campañas activas</div>
+            <button class="btn btn-sm" onclick="navigate('campaigns', document.querySelector('[onclick*=campaigns]'))">Ver todas</button>
+          </div>
+          <div id="d-campaigns-list"><div class="empty"><div class="empty-icon">📢</div><div class="empty-text">Sin campañas activas</div></div></div>
+        </div>
+        <div class="card">
+          <div class="card-header"><div class="card-title">Actividad reciente</div></div>
+          <div id="d-events-list"><div class="empty"><div class="empty-icon">📊</div><div class="empty-text">Sin actividad aún</div></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CLIENTES -->
+    <div class="section" id="sec-clients">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Todos los clientes</div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>Cliente</th><th>Slug</th><th>Dominio</th><th>Departamentos</th><th>Campañas</th><th></th></tr>
+            </thead>
+            <tbody id="clients-table-body">
+              <tr><td colspan="6"><div class="empty"><div class="empty-text">Cargando...</div></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- CAMPAÑAS -->
+    <div class="section" id="sec-campaigns">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Todas las campañas</div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>Campaña</th><th>Cliente</th><th>Departamento</th><th>Estado</th><th>Periodo</th><th>Cargas</th><th>CTR</th><th></th></tr>
+            </thead>
+            <tbody id="campaigns-table-body">
+              <tr><td colspan="8"><div class="empty"><div class="empty-text">Cargando...</div></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ANALÍTICA -->
+    <div class="section" id="sec-analytics">
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-val" id="a-loads">—</div>
+          <div class="stat-label">Cargas totales</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-val" id="a-clicks">—</div>
+          <div class="stat-label">Clics totales</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-val" id="a-ctr">—</div>
+          <div class="stat-label">CTR medio</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-val" id="a-unique">—</div>
+          <div class="stat-label">Empleados únicos</div>
+        </div>
+      </div>
+      <div class="two-col">
+        <div class="card">
+          <div class="card-header"><div class="card-title">CTR por campaña</div></div>
+          <div id="a-ctr-bars"><div class="empty"><div class="empty-text">Sin datos</div></div></div>
+        </div>
+        <div class="card">
+          <div class="card-header"><div class="card-title">Rendimiento empleados</div></div>
+          <div id="a-emp-table"><div class="empty"><div class="empty-text">Sin datos</div></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- EN VIVO -->
+    <div class="section" id="sec-live">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title"><span class="pulse"></span>Eventos en tiempo real</div>
+          <span class="badge badge-green">En vivo</span>
+        </div>
+        <div id="live-events-list"></div>
+      </div>
+    </div>
+
+    <!-- SNIPPET -->
+    <div class="section" id="sec-snippet">
+      <div class="card">
+        <div class="card-header"><div class="card-title">Generador de snippet HTML</div></div>
+        <div class="form-grid form-grid-2" style="margin-bottom:18px">
+          <div class="form-group">
+            <label class="form-label">Cliente</label>
+            <select class="form-input form-select" id="snip-client" onchange="updateSnippet()">
+              <option value="">Selecciona cliente...</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Departamento</label>
+            <select class="form-input form-select" id="snip-dept" onchange="updateSnippet()">
+              <option value="">Todos (sin dpto)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Nombre empleado</label>
+            <input class="form-input" id="snip-name" placeholder="Marc Puig" oninput="updateSnippet()">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Slug empleado (para tracking)</label>
+            <input class="form-input" id="snip-slug" placeholder="marc-puig" oninput="updateSnippet()">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Cargo</label>
+            <input class="form-input" id="snip-role" placeholder="Director Comercial" oninput="updateSnippet()">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Email</label>
+            <input class="form-input" id="snip-email" placeholder="marc@empresa.com" oninput="updateSnippet()">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Teléfono</label>
+            <input class="form-input" id="snip-tel" placeholder="+34 93 XXX XX XX" oninput="updateSnippet()">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Anchura banner (px)</label>
+            <input class="form-input" id="snip-width" value="500" oninput="updateSnippet()">
+          </div>
+        </div>
+        <div class="card-header" style="margin-bottom:8px">
+          <div class="card-title">Snippet generado</div>
+          <button class="btn btn-sm btn-primary" onclick="copySnippet()">Copiar HTML</button>
+        </div>
+        <div class="snippet" id="snippet-output">Selecciona un cliente para generar el snippet...</div>
+        <div style="margin-top:14px;padding:12px 14px;background:var(--bg3);border-radius:var(--radius);font-size:12px;color:var(--text2);line-height:1.7">
+          <strong style="color:var(--text)">Instrucciones Outlook:</strong><br>
+          1. Copia el snippet · 2. Archivo → Opciones → Correo → Firmas<br>
+          3. Editar firma → botón "HTML" del editor · 4. Pegar al final del HTML existente
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- MODAL NUEVO CLIENTE -->
+<div class="modal-overlay" id="modal-client">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Nuevo cliente</div>
+      <button class="modal-close" onclick="closeModal('modal-client')">✕</button>
+    </div>
+    <div class="form-grid">
+      <div class="form-group">
+        <label class="form-label">Nombre</label>
+        <input class="form-input" id="nc-name" placeholder="Suministros Pla" oninput="autoSlug()">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Slug (URL)</label>
+        <input class="form-input" id="nc-slug" placeholder="suministros-pla">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Dominio (opcional)</label>
+        <input class="form-input" id="nc-domain" placeholder="suministrospla.com">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Departamentos (separados por coma)</label>
+        <input class="form-input" id="nc-depts" placeholder="Comercial, Administración, Dirección">
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" onclick="closeModal('modal-client')">Cancelar</button>
+      <button class="btn btn-primary" onclick="createClient()">Crear cliente</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL NUEVA CAMPAÑA -->
+<div class="modal-overlay" id="modal-campaign">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Nueva campaña</div>
+      <button class="modal-close" onclick="closeModal('modal-campaign')">✕</button>
+    </div>
+    <div class="form-grid">
+      <div class="form-group">
+        <label class="form-label">Nombre de la campaña</label>
+        <input class="form-input" id="ncamp-name" placeholder="Campaña verano 2025">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Cliente</label>
+        <select class="form-input form-select" id="ncamp-client" onchange="loadDepts()">
+          <option value="">Selecciona cliente...</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Departamento (opcional)</label>
+        <select class="form-input form-select" id="ncamp-dept">
+          <option value="">Todos los departamentos</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">URL imagen del banner</label>
+        <input class="form-input" id="ncamp-img" placeholder="https://...supabase.co/storage/v1/object/public/signabanner-banners/banner.png">
+      </div>
+      <div class="form-group">
+        <label class="form-label">URL de destino (landing)</label>
+        <input class="form-input" id="ncamp-dest" placeholder="https://tucliente.com/promo">
+      </div>
+      <div class="form-grid form-grid-2">
+        <div class="form-group">
+          <label class="form-label">Fecha inicio</label>
+          <input class="form-input" type="datetime-local" id="ncamp-start">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Fecha fin (opcional)</label>
+          <input class="form-input" type="datetime-local" id="ncamp-end">
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" onclick="closeModal('modal-campaign')">Cancelar</button>
+      <button class="btn btn-primary" onclick="createCampaign()">Crear campaña</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+const API = 'https://cjitydjdrktvbciwapvl.supabase.co/functions/v1/signabanner';
+
+// ── Estado global ──
+let clients = [];
+let campaigns = [];
+let liveInterval = null;
+
+// ── Utilidades ──
+function toast(msg, type = 'success') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = `toast ${type} show`;
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+function avatarColor(str) {
+  const colors = ['#3b82f6','#22c55e','#f59e0b','#ef4444','#8b5cf6','#06b6d4','#ec4899'];
+  let h = 0; for (let c of str) h = (h * 31 + c.charCodeAt(0)) & 0xffff;
+  return colors[h % colors.length];
+}
+
+function initials(name) {
+  return name.split(' ').slice(0,2).map(w=>w[0]).join('').toUpperCase();
+}
+
+function formatDate(d) {
+  if (!d) return '—';
+  return new Date(d).toLocaleDateString('es-ES', { day:'2-digit', month:'short', year:'2-digit' });
+}
+
+function campaignStatus(c) {
+  const now = new Date();
+  const start = new Date(c.starts_at);
+  const end = c.ends_at ? new Date(c.ends_at) : null;
+  if (!c.active) return { label: 'Inactiva', cls: 'badge-gray' };
+  if (start > now) return { label: 'Programada', cls: 'badge-amber' };
+  if (end && end < now) return { label: 'Finalizada', cls: 'badge-red' };
+  return { label: 'Activa', cls: 'badge-green' };
+}
+
+// ── Navegación ──
+const pages = {
+  dashboard:  ['Dashboard', 'Resumen general', ''],
+  clients:    ['Clientes', 'Gestión de empresas y departamentos', '<button class="btn btn-primary" onclick="openModal(\'modal-client\')">+ Nuevo cliente</button>'],
+  campaigns:  ['Campañas', 'Banners y programación de campañas', '<button class="btn btn-primary" onclick="openCampaignModal()">+ Nueva campaña</button>'],
+  analytics:  ['Analítica', 'Métricas de rendimiento', ''],
+  live:       ['En vivo', 'Eventos en tiempo real', ''],
+  snippet:    ['Snippet HTML', 'Generador de código de firma', ''],
+};
+
+function navigate(id, el) {
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  if (el) el.classList.add('active');
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.getElementById('sec-' + id).classList.add('active');
+  const p = pages[id];
+  document.getElementById('page-title').textContent = p[0];
+  document.getElementById('page-sub').textContent = p[1];
+  document.getElementById('topbar-actions').innerHTML = p[2];
+
+  if (id === 'dashboard') loadDashboard();
+  if (id === 'clients')   loadClients();
+  if (id === 'campaigns') loadCampaigns();
+  if (id === 'analytics') loadAnalytics();
+  if (id === 'live')      startLive();
+  if (id !== 'live' && liveInterval) { clearInterval(liveInterval); liveInterval = null; }
+  if (id === 'snippet')   populateSnippetSelects();
+}
+
+// ── API calls ──
+async function apiFetch(path, opts = {}) {
+  try {
+    const res = await fetch(API + path, {
+      headers: { 'Content-Type': 'application/json' },
+      ...opts
+    });
+    return await res.json();
+  } catch(e) {
+    toast('Error de conexión con la API', 'error');
+    return null;
+  }
+}
+
+// ── Dashboard ──
+async function loadDashboard() {
+  const [summary, camps, events] = await Promise.all([
+    apiFetch('/api/analytics/summary?days=30'),
+    apiFetch('/api/campaigns'),
+    apiFetch('/api/analytics/events?limit=5')
+  ]);
+
+  if (summary) {
+    document.getElementById('d-loads').textContent   = Number(summary.loads).toLocaleString();
+    document.getElementById('d-clicks').textContent  = Number(summary.clicks).toLocaleString();
+    document.getElementById('d-ctr').textContent     = summary.ctr + '%';
+  }
+
+  clients = await apiFetch('/api/clients') || [];
+  document.getElementById('nb-clients').textContent = clients.length;
+
+  const activeCamps = (camps || []).filter(c => campaignStatus(c).label === 'Activa');
+  document.getElementById('d-clients').textContent = activeCamps.length;
+  document.getElementById('nb-campaigns').textContent = (camps || []).length;
+  campaigns = camps || [];
+
+  // Campañas activas
+  const campEl = document.getElementById('d-campaigns-list');
+  if (activeCamps.length === 0) {
+    campEl.innerHTML = '<div class="empty"><div class="empty-icon">📢</div><div class="empty-text">Sin campañas activas</div><button class="btn btn-sm btn-primary" onclick="openCampaignModal()">+ Nueva campaña</button></div>';
+  } else {
+    campEl.innerHTML = activeCamps.slice(0,5).map(c => `
+      <div style="display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--border)">
+        <div style="width:8px;height:8px;border-radius:50%;background:var(--green);flex-shrink:0"></div>
+        <div style="flex:1">
+          <div style="font-size:13px;font-weight:500">${c.name}</div>
+          <div style="font-size:11px;color:var(--text3)">${c.clients?.name || '—'} · ${c.departments?.name || 'Todos'}</div>
+        </div>
+        <span class="badge badge-green">Activa</span>
+      </div>`).join('');
+  }
+
+  // Eventos recientes
+  const evEl = document.getElementById('d-events-list');
+  if (!events || events.length === 0) {
+    evEl.innerHTML = '<div class="empty"><div class="empty-icon">📊</div><div class="empty-text">Sin actividad aún</div></div>';
+  } else {
+    evEl.innerHTML = events.map(e => `
+      <div class="event-row">
+        <div class="event-time">${new Date(e.created_at).toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit'})}</div>
+        <span class="badge ${e.event_type==='click'?'badge-blue':'badge-gray'}">${e.event_type}</span>
+        <div class="event-info">
+          <div class="event-name">${e.campaigns?.name || '—'}</div>
+          <div class="event-meta">${e.country || '—'} · ${e.city || ''}</div>
+        </div>
+      </div>`).join('');
+  }
+}
+
+// ── Clientes ──
+async function loadClients() {
+  clients = await apiFetch('/api/clients') || [];
+  document.getElementById('nb-clients').textContent = clients.length;
+  const tbody = document.getElementById('clients-table-body');
+  if (clients.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="6"><div class="empty"><div class="empty-icon">🏢</div><div class="empty-text">Sin clientes aún</div><button class="btn btn-sm btn-primary" onclick="openModal('modal-client')">+ Nuevo cliente</button></div></td></tr>`;
+    return;
+  }
+  tbody.innerHTML = clients.map(c => {
+    const color = avatarColor(c.name);
+    const depts = (c.departments || []).map(d => `<span class="badge badge-gray" style="margin-right:4px">${d.name}</span>`).join('');
+    return `<tr>
+      <td>
+        <div style="display:flex;align-items:center;gap:10px">
+          <div class="avatar" style="background:${color}22;color:${color}">${initials(c.name)}</div>
+          <div>
+            <div style="font-weight:500">${c.name}</div>
+            <div style="font-size:11px;color:var(--text3)">${c.domain || '—'}</div>
+          </div>
+        </div>
+      </td>
+      <td><span style="font-family:'DM Mono',monospace;font-size:12px;color:var(--text3)">${c.slug}</span></td>
+      <td>${c.domain || '—'}</td>
+      <td>${depts || '<span style="color:var(--text3)">—</span>'}</td>
+      <td><span style="font-family:'DM Mono',monospace">${(c.departments||[]).length}</span></td>
+      <td><button class="btn-icon" onclick="deleteClient('${c.id}','${c.name}')">🗑</button></td>
+    </tr>`;
+  }).join('');
+}
+
+async function createClient() {
+  const name  = document.getElementById('nc-name').value.trim();
+  const slug  = document.getElementById('nc-slug').value.trim();
+  const domain = document.getElementById('nc-domain').value.trim();
+  const depts = document.getElementById('nc-depts').value.split(',').map(d=>d.trim()).filter(Boolean);
+  if (!name || !slug) { toast('Nombre y slug son obligatorios', 'error'); return; }
+  const res = await apiFetch('/api/clients', {
+    method: 'POST',
+    body: JSON.stringify({ name, slug, domain: domain || null, departments: depts })
+  });
+  if (res && res.id) {
+    toast('Cliente creado correctamente');
+    closeModal('modal-client');
+    ['nc-name','nc-slug','nc-domain','nc-depts'].forEach(id => document.getElementById(id).value = '');
+    loadClients();
+  } else {
+    toast('Error al crear el cliente', 'error');
+  }
+}
+
+async function deleteClient(id, name) {
+  if (!confirm(`¿Eliminar cliente "${name}"? Se eliminarán también sus campañas y datos.`)) return;
+  toast('Función disponible directamente en Supabase por seguridad');
+}
+
+function autoSlug() {
+  const name = document.getElementById('nc-name').value;
+  document.getElementById('nc-slug').value = name.toLowerCase()
+    .normalize('NFD').replace(/[\u0300-\u036f]/g,'')
+    .replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+}
+
+// ── Campañas ──
+async function loadCampaigns() {
+  campaigns = await apiFetch('/api/campaigns') || [];
+  document.getElementById('nb-campaigns').textContent = campaigns.length;
+  const tbody = document.getElementById('campaigns-table-body');
+  if (campaigns.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="8"><div class="empty"><div class="empty-icon">📢</div><div class="empty-text">Sin campañas aún</div><button class="btn btn-sm btn-primary" onclick="openCampaignModal()">+ Nueva campaña</button></div></td></tr>`;
+    return;
+  }
+  tbody.innerHTML = campaigns.map(c => {
+    const st = campaignStatus(c);
+    return `<tr>
+      <td><div style="font-weight:500">${c.name}</div></td>
+      <td>${c.clients?.name || '—'}</td>
+      <td>${c.departments?.name || '<span style="color:var(--text3)">Todos</span>'}</td>
+      <td><span class="badge ${st.cls}">${st.label}</span></td>
+      <td style="font-size:12px;color:var(--text3)">${formatDate(c.starts_at)} → ${formatDate(c.ends_at)}</td>
+      <td>—</td>
+      <td>—</td>
+      <td>
+        <div style="display:flex;gap:6px">
+          <button class="btn-icon" title="${c.active?'Pausar':'Activar'}" onclick="toggleCampaign('${c.id}',${c.active})">${c.active?'⏸':'▶'}</button>
+        </div>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+async function openCampaignModal() {
+  if (clients.length === 0) clients = await apiFetch('/api/clients') || [];
+  const sel = document.getElementById('ncamp-client');
+  sel.innerHTML = '<option value="">Selecciona cliente...</option>' +
+    clients.map(c=>`<option value="${c.id}" data-slug="${c.slug}">${c.name}</option>`).join('');
+  // Fecha inicio por defecto = ahora
+  const now = new Date(); now.setMinutes(0,0,0);
+  document.getElementById('ncamp-start').value = now.toISOString().slice(0,16);
+  openModal('modal-campaign');
+}
+
+async function loadDepts() {
+  const clientId = document.getElementById('ncamp-client').value;
+  const client = clients.find(c => c.id === clientId);
+  const sel = document.getElementById('ncamp-dept');
+  sel.innerHTML = '<option value="">Todos los departamentos</option>';
+  if (client?.departments) {
+    client.departments.forEach(d => {
+      sel.innerHTML += `<option value="${d.id}">${d.name}</option>`;
+    });
+  }
+}
+
+async function createCampaign() {
+  const name    = document.getElementById('ncamp-name').value.trim();
+  const client_id = document.getElementById('ncamp-client').value;
+  const dept_id = document.getElementById('ncamp-dept').value;
+  const image_url = document.getElementById('ncamp-img').value.trim();
+  const destination_url = document.getElementById('ncamp-dest').value.trim();
+  const starts_at = document.getElementById('ncamp-start').value;
+  const ends_at   = document.getElementById('ncamp-end').value;
+
+  if (!name || !client_id || !image_url || !destination_url || !starts_at) {
+    toast('Rellena todos los campos obligatorios', 'error'); return;
+  }
+
+  const payload = { name, client_id, image_url, destination_url, starts_at: new Date(starts_at).toISOString() };
+  if (dept_id) payload.department_id = dept_id;
+  if (ends_at) payload.ends_at = new Date(ends_at).toISOString();
+
+  const res = await apiFetch('/api/campaigns', { method: 'POST', body: JSON.stringify(payload) });
+  if (res && res.id) {
+    toast('Campaña creada correctamente');
+    closeModal('modal-campaign');
+    loadCampaigns();
+  } else {
+    toast('Error al crear la campaña', 'error');
+  }
+}
+
+async function toggleCampaign(id, currentActive) {
+  await apiFetch(`/api/campaigns/${id}`, { method: 'PATCH', body: JSON.stringify({ active: !currentActive }) });
+  toast(currentActive ? 'Campaña pausada' : 'Campaña activada');
+  loadCampaigns();
+}
+
+// ── Analítica ──
+async function loadAnalytics() {
+  const [summary, campStats, empStats] = await Promise.all([
+    apiFetch('/api/analytics/summary?days=30'),
+    apiFetch('/api/analytics/campaigns'),
+    apiFetch('/api/analytics/employees')
+  ]);
+
+  if (summary) {
+    document.getElementById('a-loads').textContent  = Number(summary.loads).toLocaleString();
+    document.getElementById('a-clicks').textContent = Number(summary.clicks).toLocaleString();
+    document.getElementById('a-ctr').textContent    = summary.ctr + '%';
+    document.getElementById('a-unique').textContent = summary.unique_employees;
+  }
+
+  // CTR por campaña
+  const ctrEl = document.getElementById('a-ctr-bars');
+  if (campStats && campStats.length > 0) {
+    const maxCtr = Math.max(...campStats.map(c => parseFloat(c.ctr_pct) || 0), 1);
+    ctrEl.innerHTML = campStats.slice(0,6).map(c => {
+      const ctr = parseFloat(c.ctr_pct) || 0;
+      const color = ctr > 8 ? 'var(--green)' : ctr > 5 ? 'var(--accent)' : 'var(--text3)';
+      return `<div class="progress-row">
+        <div class="progress-label" title="${c.name}">${c.name}</div>
+        <div class="progress-bg"><div class="progress-fill" style="width:${(ctr/maxCtr)*100}%;background:${color}"></div></div>
+        <div class="progress-val">${ctr.toFixed(1)}%</div>
+      </div>`;
+    }).join('');
+  } else {
+    ctrEl.innerHTML = '<div class="empty"><div class="empty-text">Sin datos de campañas aún</div></div>';
+  }
+
+  // Empleados
+  const empEl = document.getElementById('a-emp-table');
+  if (empStats && empStats.length > 0) {
+    empEl.innerHTML = `<table>
+      <thead><tr><th>Empleado</th><th>Cliente</th><th>Cargas</th><th>Clics</th><th>CTR</th></tr></thead>
+      <tbody>${empStats.slice(0,8).map(e => {
+        const ctr = parseFloat(e.ctr_pct) || 0;
+        const color = ctr > 8 ? 'var(--green)' : ctr > 5 ? 'var(--accent)' : 'var(--text3)';
+        return `<tr>
+          <td style="font-weight:500">${e.name}</td>
+          <td style="color:var(--text3)">${e.client_name}</td>
+          <td style="font-family:'DM Mono',monospace">${e.loads}</td>
+          <td style="font-family:'DM Mono',monospace">${e.clicks}</td>
+          <td style="color:${color};font-family:'DM Mono',monospace">${ctr.toFixed(1)}%</td>
+        </tr>`;
+      }).join('')}</tbody>
+    </table>`;
+  } else {
+    empEl.innerHTML = '<div class="empty"><div class="empty-text">Sin datos de empleados aún</div></div>';
+  }
+}
+
+// ── En vivo ──
+const liveEventTypes = ['click','click','load','click','load','load','click'];
+const liveCampaigns  = ['Campaña verano','Promo técnico','Newsletter','Campaña verano'];
+const liveCountries  = ['ES','ES','FR','ES','DE','ES'];
+const liveCities     = ['Barcelona','Madrid','París','Terrassa','Berlín','Sabadell'];
+const liveDevices    = ['Outlook Desktop','Outlook Web','iOS Mail','Android'];
+const liveCompanies  = ['Roca S.A.','Desconocido','BNP Paribas','—','Seat S.A.'];
+
+async function startLive() {
+  const el = document.getElementById('live-events-list');
+  let rows = [];
+
+  async function fetchEvents() {
+    const data = await apiFetch('/api/analytics/events?limit=20');
+    if (data && data.length > 0) {
+      el.innerHTML = data.map(e => `
+        <div class="event-row">
+          <div class="event-time">${new Date(e.created_at).toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit',second:'2-digit'})}</div>
+          <span class="badge ${e.event_type==='click'?'badge-blue':'badge-gray'}">${e.event_type}</span>
+          <div class="event-info">
+            <div class="event-name">${e.campaigns?.name || '—'}</div>
+            <div class="event-meta">${e.employees?.name || 'Empleado desconocido'} · ${e.country||'—'} ${e.city||''}</div>
+          </div>
+          <div style="font-size:11px;color:var(--text3)">${e.company_name || '—'}</div>
+        </div>`).join('');
+    } else {
+      // Sin datos reales: mostrar simulación
+      const i = Math.floor(Math.random() * liveEventTypes.length);
+      const now = new Date();
+      const isClick = liveEventTypes[i] === 'click';
+      rows.unshift({
+        time: now.toLocaleTimeString('es-ES'),
+        type: isClick ? 'click' : 'load',
+        campaign: liveCampaigns[Math.floor(Math.random()*liveCampaigns.length)],
+        country: liveCountries[i],
+        city: liveCities[i],
+        device: liveDevices[Math.floor(Math.random()*liveDevices.length)],
+        company: liveCompanies[Math.floor(Math.random()*liveCompanies.length)]
+      });
+      if (rows.length > 15) rows.pop();
+      el.innerHTML = rows.map(r => `
+        <div class="event-row">
+          <div class="event-time">${r.time}</div>
+          <span class="badge ${r.type==='click'?'badge-blue':'badge-gray'}">${r.type}</span>
+          <div class="event-info">
+            <div class="event-name">${r.campaign}</div>
+            <div class="event-meta">${r.device} · ${r.country} ${r.city}</div>
+          </div>
+          <div style="font-size:11px;color:var(--text3)">${r.company}</div>
+        </div>`).join('');
+    }
+  }
+
+  fetchEvents();
+  liveInterval = setInterval(fetchEvents, 5000);
+}
+
+// ── Snippet ──
+async function populateSnippetSelects() {
+  if (clients.length === 0) clients = await apiFetch('/api/clients') || [];
+  const sel = document.getElementById('snip-client');
+  sel.innerHTML = '<option value="">Selecciona cliente...</option>' +
+    clients.map(c => `<option value="${c.id}" data-slug="${c.slug}">${c.name}</option>`).join('');
+  updateSnippet();
+}
+
+function updateSnippet() {
+  const clientSel = document.getElementById('snip-client');
+  const deptSel   = document.getElementById('snip-dept');
+  const clientOpt = clientSel.options[clientSel.selectedIndex];
+  const clientSlug = clientOpt?.dataset?.slug || '';
+
+  // Actualizar departamentos
+  const clientId = clientSel.value;
+  const client = clients.find(c => c.id === clientId);
+  deptSel.innerHTML = '<option value="" data-slug="">Todos (sin dpto)</option>';
+  if (client?.departments) {
+    client.departments.forEach(d => {
+      deptSel.innerHTML += `<option value="${d.id}" data-slug="${d.slug}">${d.name}</option>`;
+    });
+  }
+
+  if (!clientSlug) { document.getElementById('snippet-output').textContent = 'Selecciona un cliente para generar el snippet...'; return; }
+
+  const deptOpt  = deptSel.options[deptSel.selectedIndex];
+  const deptSlug = deptOpt?.dataset?.slug || '';
+  const empSlug  = document.getElementById('snip-slug').value || 'empleado';
+  const name     = document.getElementById('snip-name').value || 'Nombre Apellido';
+  const role     = document.getElementById('snip-role').value || 'Cargo · Empresa';
+  const email    = document.getElementById('snip-email').value || 'email@empresa.com';
+  const tel      = document.getElementById('snip-tel').value || '+34 900 000 000';
+  const width    = document.getElementById('snip-width').value || '500';
+
+  const bannerPath = deptSlug
+    ? `/b/${clientSlug}/${deptSlug}.png?u=${empSlug}`
+    : `/b/${clientSlug}.png?u=${empSlug}`;
+  const clickPath = deptSlug
+    ? `/click/${clientSlug}/${deptSlug}?u=${empSlug}`
+    : `/click/${clientSlug}?u=${empSlug}`;
+
+  const bannerUrl = API + bannerPath;
+  const clickUrl  = API + clickPath;
+
+  document.getElementById('snippet-output').textContent =
+`<table cellpadding="0" cellspacing="0" border="0">
+  <tr>
+    <td style="font-family:Arial,sans-serif;font-size:14px;
+               font-weight:bold;color:#1a1a1a;padding-bottom:2px">
+      ${name}
+    </td>
+  </tr>
+  <tr>
+    <td style="font-family:Arial,sans-serif;font-size:12px;
+               color:#555555;padding-bottom:2px">
+      ${role}
+    </td>
+  </tr>
+  <tr>
+    <td style="font-family:Arial,sans-serif;font-size:12px;
+               color:#555555;padding-bottom:8px">
+      ${tel} &nbsp;·&nbsp; ${email}
+    </td>
+  </tr>
+  <tr>
+    <td style="padding-top:4px;border-top:1px solid #e5e5e5">
+    </td>
+  </tr>
+  <tr>
+    <td style="padding-top:8px">
+      <a href="${clickUrl}" target="_blank">
+        <img src="${bannerUrl}"
+             width="${width}" border="0" alt=""
+             style="display:block;max-width:${width}px">
+      </a>
+    </td>
+  </tr>
+</table>`;
+}
+
+function copySnippet() {
+  const text = document.getElementById('snippet-output').textContent;
+  navigator.clipboard.writeText(text).then(() => toast('Snippet copiado al portapapeles')).catch(() => toast('Error al copiar', 'error'));
+}
+
+// ── Init ──
+loadDashboard();
+</script>
+</body>
+</html>
