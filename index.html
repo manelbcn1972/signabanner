@@ -380,6 +380,19 @@ textarea.form-input { resize: vertical; min-height: 80px; }
         <div id="url-cards-list">
           <div class="empty"><div class="empty-icon">🔗</div><div class="empty-text">Cargando clientes...</div></div>
         </div>
+
+        <!-- Preview área -->
+        <div id="banner-preview-wrap" style="display:none;margin-top:20px">
+          <div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:10px;font-family:var(--font-mono)">Vista previa — selecciona y copia para pegar en Outlook</div>
+          <div id="banner-preview-area" 
+               style="background:white;border-radius:var(--radius);padding:20px;border:1px solid var(--border);cursor:copy"
+               title="Selecciona y copia (Ctrl+C) para pegar en Outlook">
+          </div>
+          <div style="font-size:11px;color:var(--text3);margin-top:8px;display:flex;align-items:center;gap:6px">
+            <span style="font-size:14px">💡</span>
+            Selecciona el banner de arriba (Ctrl+A dentro del área) → Ctrl+C → pégalo directamente en tu firma de Outlook
+          </div>
+        </div>
       </div>
 
       <div class="card" style="background:var(--bg3);border-color:var(--border)">
@@ -999,15 +1012,13 @@ async function loadUrlCards() {
     const color = avatarColor(c.name);
     const depts = (c.departments || []);
 
-    const deptUrls = depts.length > 0 ? depts.map(d => `
+    const deptRows = depts.length > 0 ? depts.map(d => `
       <div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-top:1px solid var(--border)">
         <span class="badge badge-gray" style="min-width:90px;justify-content:center">${d.name}</span>
-        <div style="flex:1">
-          <div style="font-family:var(--font-mono);font-size:11px;color:var(--text2);word-break:break-all">
-            https://signabanner.netlify.app/.netlify/functions/b?c=${c.slug}&d=${d.slug}
-          </div>
+        <div style="flex:1;font-family:var(--font-mono);font-size:11px;color:var(--text2);word-break:break-all">
+          https://signabanner.netlify.app/.netlify/functions/b?c=${c.slug}&d=${d.slug}
         </div>
-        <button class="btn btn-sm" onclick="copyUrl('https://signabanner.netlify.app/.netlify/functions/b?c=${c.slug}&d=${d.slug}', this)">Copiar</button>
+        <button class="btn btn-sm" onclick="showPreview('https://signabanner.netlify.app/.netlify/functions/b?c=${c.slug}&d=${d.slug}','https://signabanner.netlify.app/.netlify/functions/click?c=${c.slug}&d=${d.slug}', this)">Ver banner</button>
       </div>`).join('') : '';
 
     return `<div style="padding:16px 0;border-bottom:1px solid var(--border)">
@@ -1017,31 +1028,55 @@ async function loadUrlCards() {
           <div style="font-weight:500;font-size:14px">${c.name}</div>
           <div style="font-size:11px;color:var(--text3)">${c.domain || c.slug}</div>
         </div>
-        <span class="badge badge-green">Activa</span>
+        <button class="btn btn-sm btn-primary" onclick="showPreview('${bannerUrl}','${clickUrl}', this)">
+          Ver y copiar banner
+        </button>
       </div>
 
-      <div style="background:var(--bg3);border-radius:var(--radius);padding:12px 14px;margin-bottom:8px">
-        <div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:6px;font-family:var(--font-mono)">URL de imagen (pegar en firma Outlook)</div>
-        <div style="display:flex;align-items:center;gap:10px">
-          <div style="flex:1;font-family:var(--font-mono);font-size:12px;color:var(--accent);word-break:break-all">${bannerUrl}</div>
-          <button class="btn btn-sm btn-primary" onclick="copyUrl('${bannerUrl}', this)" style="flex-shrink:0">Copiar URL</button>
-        </div>
+      <div style="background:var(--bg3);border-radius:var(--radius);padding:10px 14px;display:flex;align-items:center;gap:10px">
+        <div style="flex:1;font-family:var(--font-mono);font-size:11px;color:var(--text3);word-break:break-all">${bannerUrl}</div>
+        <button class="btn btn-sm" onclick="copyUrl('${bannerUrl}', this)" style="flex-shrink:0">Copiar URL</button>
       </div>
 
-      <div style="background:var(--bg3);border-radius:var(--radius);padding:12px 14px;margin-bottom:${deptUrls ? '8px' : '0'}">
-        <div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:6px;font-family:var(--font-mono)">URL de clic (enlace de la imagen)</div>
-        <div style="display:flex;align-items:center;gap:10px">
-          <div style="flex:1;font-family:var(--font-mono);font-size:12px;color:var(--text2);word-break:break-all">${clickUrl}</div>
-          <button class="btn btn-sm" onclick="copyUrl('${clickUrl}', this)" style="flex-shrink:0">Copiar URL</button>
-        </div>
-      </div>
-
-      ${deptUrls ? `<div style="margin-top:8px;padding:8px 14px;background:var(--bg3);border-radius:var(--radius)">
+      ${deptRows ? `<div style="margin-top:8px;padding:8px 14px;background:var(--bg3);border-radius:var(--radius)">
         <div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px;font-family:var(--font-mono)">Por departamento</div>
-        ${deptUrls}
+        ${deptRows}
       </div>` : ''}
     </div>`;
   }).join('');
+}
+
+function showPreview(bannerUrl, clickUrl, btn) {
+  const wrap = document.getElementById('banner-preview-wrap');
+  const area = document.getElementById('banner-preview-area');
+
+  // Scroll suave hasta el preview
+  wrap.style.display = 'block';
+
+  // Renderizar el banner como HTML real — listo para copiar/pegar en Outlook
+  area.innerHTML = `<a href="${clickUrl}" target="_blank" style="display:block;text-decoration:none">
+    <img src="${bannerUrl}" 
+         style="display:block;max-width:100%;border:0" 
+         border="0" alt="Banner">
+  </a>`;
+
+  // Scroll hasta el preview
+  setTimeout(() => {
+    wrap.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    // Seleccionar automáticamente para facilitar Ctrl+C
+    const range = document.createRange();
+    range.selectNodeContents(area);
+    const sel = window.getSelection();
+    sel.removeAllRanges();
+    sel.addRange(range);
+  }, 100);
+
+  toast('Banner listo — pulsa Ctrl+C para copiar y pégalo en Outlook');
+
+  // Feedback en el botón
+  const orig = btn.textContent;
+  btn.textContent = '✓ Seleccionado';
+  setTimeout(() => { btn.textContent = orig; }, 2000);
 }
 
 function copyUrl(url, btn) {
