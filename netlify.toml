@@ -5,7 +5,7 @@
 [build.environment]
   NODE_VERSION = "18"
 
-# Redirigir /api/* a la función api
+# Redirigir /api/* a la función api con path como query param
 [[redirects]]
   from = "/api/*"
   to = "/.netlify/functions/api/:splat"
