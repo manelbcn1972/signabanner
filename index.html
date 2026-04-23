@@ -579,7 +579,7 @@ function navigate(id, el) {
   if (id === 'analytics') loadAnalytics();
   if (id === 'live')      startLive();
   if (id !== 'live' && liveInterval) { clearInterval(liveInterval); liveInterval = null; }
-  if (id === 'snippet')   populateSnippetSelects();
+  if (id === 'codigofirma') populateSnippetSelects();
 }
 
 // ── API calls ──
