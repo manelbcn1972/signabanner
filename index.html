@@ -859,16 +859,10 @@ async function loadAnalytics() {
 }
 
 // ── En vivo ──
-const liveEventTypes = ['click','click','load','click','load','load','click'];
-const liveCampaigns  = ['Campaña verano','Promo técnico','Newsletter','Campaña verano'];
-const liveCountries  = ['ES','ES','FR','ES','DE','ES'];
-const liveCities     = ['Barcelona','Madrid','París','Terrassa','Berlín','Sabadell'];
-const liveDevices    = ['Outlook Desktop','Outlook Web','iOS Mail','Android'];
-const liveCompanies  = ['Roca S.A.','Desconocido','BNP Paribas','—','Seat S.A.'];
+// Sin datos de simulación — solo datos reales
 
 async function startLive() {
   const el = document.getElementById('live-events-list');
-  let rows = [];
 
   async function fetchEvents() {
     const data = await apiFetch('/api/analytics/events?limit=20');
@@ -879,35 +873,12 @@ async function startLive() {
           <span class="badge ${e.event_type==='click'?'badge-blue':'badge-gray'}">${e.event_type}</span>
           <div class="event-info">
             <div class="event-name">${e.campaigns?.name || '—'}</div>
-            <div class="event-meta">${e.employees?.name || 'Empleado desconocido'} · ${e.country||'—'} ${e.city||''}</div>
+            <div class="event-meta">${e.employees?.name || '—'} · ${e.country||'—'} ${e.city||''}</div>
           </div>
           <div style="font-size:11px;color:var(--text3)">${e.company_name || '—'}</div>
         </div>`).join('');
     } else {
-      // Sin datos reales: mostrar simulación
-      const i = Math.floor(Math.random() * liveEventTypes.length);
-      const now = new Date();
-      const isClick = liveEventTypes[i] === 'click';
-      rows.unshift({
-        time: now.toLocaleTimeString('es-ES'),
-        type: isClick ? 'click' : 'load',
-        campaign: liveCampaigns[Math.floor(Math.random()*liveCampaigns.length)],
-        country: liveCountries[i],
-        city: liveCities[i],
-        device: liveDevices[Math.floor(Math.random()*liveDevices.length)],
-        company: liveCompanies[Math.floor(Math.random()*liveCompanies.length)]
-      });
-      if (rows.length > 15) rows.pop();
-      el.innerHTML = rows.map(r => `
-        <div class="event-row">
-          <div class="event-time">${r.time}</div>
-          <span class="badge ${r.type==='click'?'badge-blue':'badge-gray'}">${r.type}</span>
-          <div class="event-info">
-            <div class="event-name">${r.campaign}</div>
-            <div class="event-meta">${r.device} · ${r.country} ${r.city}</div>
-          </div>
-          <div style="font-size:11px;color:var(--text3)">${r.company}</div>
-        </div>`).join('');
+      el.innerHTML = '<div class="empty"><div class="empty-icon">📡</div><div class="empty-text">Sin actividad aún · Los eventos aparecerán aquí en tiempo real cuando los empleados envíen emails</div></div>';
     }
   }
 
