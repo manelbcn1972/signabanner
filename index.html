@@ -50,10 +50,10 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
 
 /* MAIN */
 .main { margin-left: 220px; flex: 1; display: flex; flex-direction: column; min-height: 100vh; }
-.topbar { padding: 16px 28px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; background: var(--bg2); position: sticky; top: 0; z-index: 5; }
+.topbar { padding: 14px 32px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; background: var(--bg2); position: sticky; top: 0; z-index: 5; }
 .page-title { font-size: 16px; font-weight: 500; letter-spacing: -0.3px; }
 .page-sub { font-size: 12px; color: var(--text3); margin-top: 2px; }
-.content { padding: 24px 28px; flex: 1; }
+.content { padding: 28px 32px; flex: 1; }
 
 /* BUTTONS */
 .btn { display: inline-flex; align-items: center; gap: 6px; padding: 7px 14px; border-radius: var(--radius); border: 1px solid var(--border2); background: var(--bg3); color: var(--text); font-size: 13px; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all 0.15s; }
@@ -67,16 +67,17 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
 .btn-icon:hover { background: var(--bg4); color: var(--text); }
 
 /* CARDS */
-.card { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius2); padding: 18px 20px; margin-bottom: 14px; }
+.card { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius2); padding: 20px 22px; margin-bottom: 14px; }
 .card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
 .card-title { font-size: 12px; font-weight: 500; color: var(--text2); text-transform: uppercase; letter-spacing: 0.06em; font-family: 'DM Mono', monospace; }
 
 /* STATS */
-.stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 20px; }
-.stat-card { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius2); padding: 16px 18px; }
-.stat-val { font-size: 26px; font-weight: 300; letter-spacing: -1px; line-height: 1; margin-bottom: 4px; font-family: 'DM Mono', monospace; }
-.stat-label { font-size: 11px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.06em; }
-.stat-delta { font-size: 11px; margin-top: 8px; display: flex; align-items: center; gap: 4px; }
+.stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 24px; }
+.stat-card { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius2); padding: 20px 22px; position: relative; overflow: hidden; }
+.stat-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: var(--card-accent, var(--accent)); opacity: 0.7; }
+.stat-val { font-size: 32px; font-weight: 300; letter-spacing: -2px; line-height: 1; margin-bottom: 6px; font-family: 'DM Mono', monospace; color: var(--text); }
+.stat-label { font-size: 11px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.08em; font-weight: 500; }
+.stat-delta { font-size: 11px; margin-top: 10px; display: flex; align-items: center; gap: 4px; color: var(--text3); }
 .delta-up { color: var(--green); }
 .delta-dn { color: var(--red); }
 
@@ -150,9 +151,9 @@ textarea.form-input { resize: vertical; min-height: 80px; }
 @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
 
 /* EMPTY STATE */
-.empty { text-align: center; padding: 48px 20px; color: var(--text3); }
-.empty-icon { font-size: 32px; margin-bottom: 12px; opacity: 0.4; }
-.empty-text { font-size: 13px; margin-bottom: 16px; }
+.empty { text-align: center; padding: 40px 20px; color: var(--text3); }
+.empty-icon { font-size: 28px; margin-bottom: 10px; opacity: 0.3; }
+.empty-text { font-size: 12px; margin-bottom: 14px; letter-spacing: 0.02em; }
 
 /* TOAST */
 .toast { position: fixed; bottom: 24px; right: 24px; background: var(--bg4); border: 1px solid var(--border2); border-radius: var(--radius); padding: 12px 16px; font-size: 13px; z-index: 200; transform: translateY(80px); opacity: 0; transition: all 0.25s; pointer-events: none; }
@@ -225,7 +226,7 @@ textarea.form-input { resize: vertical; min-height: 80px; }
     <div class="nav-label">Herramientas</div>
     <div class="nav-item" onclick="navigate('codigofirma', this)">
       <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
-      Snippet
+      Código de firma
     </div>
   </div>
   <div class="sidebar-footer">
@@ -248,25 +249,25 @@ textarea.form-input { resize: vertical; min-height: 80px; }
     <!-- DASHBOARD -->
     <div class="section active" id="sec-dashboard">
       <div class="stats-grid">
-        <div class="stat-card">
-          <div class="stat-val" id="d-loads">—</div>
-          <div class="stat-label">Cargas banner</div>
-          <div class="stat-delta delta-up">últimos 30 días</div>
+        <div class="stat-card" style="--card-accent:#3b82f6">
+          <div class="stat-val" id="d-loads">0</div>
+          <div class="stat-label">Cargas de banner</div>
+          <div class="stat-delta">últimos 30 días</div>
         </div>
-        <div class="stat-card">
-          <div class="stat-val" id="d-clicks">—</div>
+        <div class="stat-card" style="--card-accent:#22c55e">
+          <div class="stat-val" id="d-clicks">0</div>
           <div class="stat-label">Clics totales</div>
-          <div class="stat-delta delta-up">últimos 30 días</div>
+          <div class="stat-delta">últimos 30 días</div>
         </div>
-        <div class="stat-card">
-          <div class="stat-val" id="d-ctr">—</div>
+        <div class="stat-card" style="--card-accent:#f59e0b">
+          <div class="stat-val" id="d-ctr">0.0%</div>
           <div class="stat-label">CTR medio</div>
           <div class="stat-delta">click-through rate</div>
         </div>
-        <div class="stat-card">
-          <div class="stat-val" id="d-clients">—</div>
-          <div class="stat-label">Clientes activos</div>
-          <div class="stat-delta">con campaña activa</div>
+        <div class="stat-card" style="--card-accent:#8b5cf6">
+          <div class="stat-val" id="d-clients">0</div>
+          <div class="stat-label">Campañas activas</div>
+          <div class="stat-delta">en este momento</div>
         </div>
       </div>
       <div class="two-col">
@@ -325,20 +326,20 @@ textarea.form-input { resize: vertical; min-height: 80px; }
     <!-- ANALÍTICA -->
     <div class="section" id="sec-analytics">
       <div class="stats-grid">
-        <div class="stat-card">
-          <div class="stat-val" id="a-loads">—</div>
+        <div class="stat-card" style="--card-accent:#3b82f6">
+          <div class="stat-val" id="a-loads">0</div>
           <div class="stat-label">Cargas totales</div>
         </div>
-        <div class="stat-card">
-          <div class="stat-val" id="a-clicks">—</div>
+        <div class="stat-card" style="--card-accent:#22c55e">
+          <div class="stat-val" id="a-clicks">0</div>
           <div class="stat-label">Clics totales</div>
         </div>
-        <div class="stat-card">
-          <div class="stat-val" id="a-ctr">—</div>
+        <div class="stat-card" style="--card-accent:#f59e0b">
+          <div class="stat-val" id="a-ctr">0.0%</div>
           <div class="stat-label">CTR medio</div>
         </div>
-        <div class="stat-card">
-          <div class="stat-val" id="a-unique">—</div>
+        <div class="stat-card" style="--card-accent:#8b5cf6">
+          <div class="stat-val" id="a-unique">0</div>
           <div class="stat-label">Empleados únicos</div>
         </div>
       </div>
@@ -411,7 +412,7 @@ textarea.form-input { resize: vertical; min-height: 80px; }
           <div class="card-title">Código generado</div>
           <button class="btn btn-sm btn-primary" onclick="copyCode()">Copiar HTML</button>
         </div>
-        <div class="snippet" id="code-output">Selecciona un cliente para generar el snippet...</div>
+        <div class="snippet" id="code-output">Selecciona un cliente para generar el código...</div>
         <div style="margin-top:14px;padding:12px 14px;background:var(--bg3);border-radius:var(--radius);font-size:12px;color:var(--text2);line-height:1.7">
           <strong style="color:var(--text)">Instrucciones Outlook:</strong><br>
           1. Copia el código · 2. Archivo → Opciones → Correo → Firmas<br>
@@ -604,9 +605,12 @@ async function loadDashboard() {
   ]);
 
   if (summary) {
-    document.getElementById('d-loads').textContent   = Number(summary.loads).toLocaleString();
-    document.getElementById('d-clicks').textContent  = Number(summary.clicks).toLocaleString();
-    document.getElementById('d-ctr').textContent     = summary.ctr + '%';
+    const loads  = parseInt(summary.loads)  || 0;
+    const clicks = parseInt(summary.clicks) || 0;
+    const ctr    = parseFloat(summary.ctr)  || 0;
+    document.getElementById('d-loads').textContent   = loads.toLocaleString('es-ES');
+    document.getElementById('d-clicks').textContent  = clicks.toLocaleString('es-ES');
+    document.getElementById('d-ctr').textContent     = ctr.toFixed(1) + '%';
   }
 
   clients = await apiFetch('/api/clients') || [];
@@ -806,10 +810,13 @@ async function loadAnalytics() {
   ]);
 
   if (summary) {
-    document.getElementById('a-loads').textContent  = Number(summary.loads).toLocaleString();
-    document.getElementById('a-clicks').textContent = Number(summary.clicks).toLocaleString();
-    document.getElementById('a-ctr').textContent    = summary.ctr + '%';
-    document.getElementById('a-unique').textContent = summary.unique_employees;
+    const loads  = parseInt(summary.loads)  || 0;
+    const clicks = parseInt(summary.clicks) || 0;
+    const ctr    = parseFloat(summary.ctr)  || 0;
+    document.getElementById('a-loads').textContent  = loads.toLocaleString('es-ES');
+    document.getElementById('a-clicks').textContent = clicks.toLocaleString('es-ES');
+    document.getElementById('a-ctr').textContent    = ctr.toFixed(1) + '%';
+    document.getElementById('a-unique').textContent = parseInt(summary.unique_employees) || 0;
   }
 
   // CTR por campaña
