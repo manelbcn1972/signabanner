@@ -410,13 +410,19 @@ textarea.form-input { resize: vertical; min-height: 80px; }
         </div>
         <div class="card-header" style="margin-bottom:8px">
           <div class="card-title">Código generado</div>
-          <button class="btn btn-sm btn-primary" onclick="copyCode()">Copiar HTML</button>
+          <div style="display:flex;gap:8px">
+            <button class="btn btn-sm" onclick="copyCode()">Copiar HTML</button>
+            <button class="btn btn-sm btn-primary" onclick="downloadHtm()">⬇ Descargar .htm</button>
+          </div>
         </div>
         <textarea class="snippet" id="code-output" readonly style="width:100%;min-height:220px;resize:vertical;cursor:text">Selecciona un cliente para generar el código...</textarea>
         <div style="margin-top:14px;padding:12px 14px;background:var(--bg3);border-radius:var(--radius);font-size:12px;color:var(--text2);line-height:1.7">
-          <strong style="color:var(--text)">Instrucciones Outlook:</strong><br>
-          1. Copia el código · 2. Archivo → Opciones → Correo → Firmas<br>
-          3. Editar firma → botón "HTML" del editor · 4. Pegar al final del HTML existente
+          <strong style="color:var(--text)">Instalación en Outlook desktop:</strong><br>
+          1. Descarga el archivo <strong style="color:var(--accent)">.htm</strong><br>
+          2. Abre el Explorador de archivos y ve a:<br>
+          <span style="font-family:var(--font-mono);font-size:10px;color:var(--text3)">C:\Users\TuUsuario\AppData\Roaming\Microsoft\Signatures\</span><br>
+          3. Copia el archivo .htm descargado en esa carpeta<br>
+          4. En Outlook: Archivo → Opciones → Correo → Firmas → selecciona la firma
         </div>
       </div>
     </div>
@@ -980,6 +986,37 @@ function updateSnippet() {
 function copyCode() {
   const el = document.getElementById('code-output'); el.select(); const text = el.value;
   navigator.clipboard.writeText(text).then(() => toast('Código copiado al portapapeles')).catch(() => toast('Error al copiar', 'error'));
+}
+
+function downloadHtm() {
+  const code = document.getElementById('code-output').value;
+  if (!code || code.startsWith('Selecciona')) { toast('Primero selecciona un cliente', 'error'); return; }
+
+  // Nombre del archivo basado en el empleado
+  const empName = document.getElementById('snip-slug').value || 'firma';
+  const clientSel = document.getElementById('snip-client');
+  const clientName = clientSel.options[clientSel.selectedIndex]?.text || 'cliente';
+
+  // HTML completo para Outlook — estructura mínima que Outlook interpreta bien
+  const htm = `<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+</head>
+<body>
+${code}
+</body>
+</html>`;
+
+  const blob = new Blob([htm], { type: 'text/html;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `firma-${clientName.toLowerCase().replace(/\s+/g,'-')}-${empName}.htm`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  toast('Archivo .htm descargado');
 }
 
 // ── Init ──
