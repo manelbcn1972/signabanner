@@ -18,3 +18,4 @@ Panel de gestión de banners dinámicos para firmas de email O365.
 ## Deploy
 Conectar este repo a Netlify. No requiere build step.
 Publish directory: `.` (raíz)
+# redeploy Thu Apr 23 09:56:04 UTC 2026
