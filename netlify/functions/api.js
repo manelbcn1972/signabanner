@@ -55,6 +55,21 @@ exports.handler = async (event) => {
         }))
       );
     }
+    // Generar fallback banner SVG embebido (sin necesitar Storage)
+    const fallbackSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="600" height="80">
+      <rect width="600" height="80" fill="#13161b"/>
+      <rect width="4" height="80" fill="#3b82f6"/>
+      <rect x="4" y="0" width="596" height="1" fill="#2a303a"/>
+      <rect x="4" y="79" width="596" height="1" fill="#2a303a"/>
+      <text x="24" y="30" font-family="Arial,sans-serif" font-size="16" font-weight="bold" fill="#e8eaed">${name}</text>
+      <text x="24" y="52" font-family="Arial,sans-serif" font-size="12" fill="#8b95a3">${domain || slug}</text>
+      <text x="24" y="68" font-family="Arial,sans-serif" font-size="11" fill="#555f6e">Para más información, contacta con nosotros</text>
+    </svg>`;
+    const fallbackDataUri = 'data:image/svg+xml;base64,' + Buffer.from(fallbackSvg).toString('base64');
+    
+    await supabase.schema('signabanner').from('clients')
+      .update({ fallback_image_url: fallbackDataUri }).eq('id', client.id);
+
     // Devolver cliente con departamentos
     const { data: full } = await supabase.schema('signabanner')
       .from('clients').select('*, departments(*)').eq('id', client.id).single();
