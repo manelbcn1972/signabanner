@@ -75,19 +75,7 @@ exports.handler = async (event) => {
   const imgHeaders = { 'Content-Type': 'image/png', 'Cache-Control': 'no-cache, no-store, must-revalidate', ...CORS };
 
   if (!campaign) {
-    // Buscar imagen de fallback del cliente
-    const { data: clientData } = await supabase.schema('signabanner')
-      .from('clients').select('fallback_image_url').eq('slug', clientSlug).single();
-    
-    if (clientData?.fallback_image_url) {
-      try {
-        const fallbackRes = await fetch(clientData.fallback_image_url, { signal: AbortSignal.timeout(3000) });
-        const fallbackBuf = Buffer.from(await fallbackRes.arrayBuffer());
-        return { statusCode: 200, headers: imgHeaders, body: fallbackBuf.toString('base64'), isBase64Encoded: true };
-      } catch {
-        // Si falla el fallback, pixel transparente
-      }
-    }
+    // Sin campaña activa → pixel transparente 1x1, no ocupa espacio en la firma
     return { statusCode: 200, headers: imgHeaders, body: EMPTY_PNG.toString('base64'), isBase64Encoded: true };
   }
 
